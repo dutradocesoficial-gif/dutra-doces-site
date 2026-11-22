@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pagamento · Dutra Doces</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#231f20">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/checkout/checkout.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="xadrez" aria-hidden="true"></div>
+    <div class="faixa">
+      <span>• Porque a vida tem que ser doce •</span>
+      <div class="selo" aria-hidden="true">
+        <p>Ateliê de<span class="ouro">doces e<br>bombons</span>finos.</p>
+      </div>
+    </div>
+    <a class="marca" href="https://dutradoces.com.br" aria-label="Dutra Doces — página inicial">
+      <img src="/assets/logo-dutra-doces.png" width="1266" height="421" alt="Dutra Doces">
+    </a>
+  </header>
+
+  <main id="app" aria-busy="true">
+    <!-- Estado inicial: carregando (esqueleto) -->
+    <p class="sr-only">Carregando seu pedido…</p>
+    <div class="esq relogio-esq" aria-hidden="true"></div>
+    <div class="esq bloco" aria-hidden="true"></div>
+    <div class="esq bloco2" aria-hidden="true"></div>
+  </main>
+
+  <!-- Anúncios para leitores de tela (contagem a cada minuto, status do pagamento) -->
+  <div id="anuncio" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Trava de tela durante o processamento -->
+  <div id="travar" class="travar" role="alertdialog" aria-modal="true" aria-labelledby="travar-txt" hidden>
+    <div>
+      <div class="roda" aria-hidden="true"></div>
+      <p id="travar-txt">Processando pagamento…</p>
+      <small>Não feche nem atualize esta página.</small>
+    </div>
+  </div>
+
+  <footer id="rodape"></footer>
+
+  <noscript>
+    <p style="text-align:center;padding:16px;color:#e9e3dc">Para pagar, ative o JavaScript do navegador ou fale com a gente pelo WhatsApp (48) 99101-3331.</p>
+  </noscript>
+
+  <script src="/checkout/config.js"></script>
+  <script src="/checkout/checkout.js"></script>
+</body>
+</html>
