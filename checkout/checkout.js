@@ -781,6 +781,7 @@
     var nome = $('#cc-nome').value.trim().replace(/\s+/g, ' ');
     var cpf = soDigitos($('#cc-cpf').value);
     var parcelas = parseInt($('#cc-parcelas').value, 10) || 1;
+    var bin = numero.slice(0, 6); // 6 primeiros dígitos: o servidor confere os juros do parcelamento
     var btn = $('#btn-pagar');
     btn.disabled = true; btn.textContent = 'Processando…';
     $('#aviso-cartao').innerHTML = '';
@@ -790,7 +791,7 @@
       .then(function (cripto) {
         numero = null; // não guarda o número em memória além do necessário
         limparCartao();
-        return api('POST', 'checkout-cartao', { token: S.token, cartao_criptografado: cripto, titular_nome: nome, titular_cpf: cpf, parcelas: parcelas });
+        return api('POST', 'checkout-cartao', { token: S.token, cartao_criptografado: cripto, bin: bin, titular_nome: nome, titular_cpf: cpf, parcelas: parcelas });
       }, function (erroCripto) {
         destravar(); btn.disabled = false; atualizarBotaoPagar();
         if (erroCripto && erroCripto.campo) { erroCampo(erroCripto.campo, erroCripto.mensagem); $('#' + erroCripto.campo).focus(); }
