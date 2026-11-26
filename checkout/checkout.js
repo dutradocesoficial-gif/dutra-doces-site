@@ -151,12 +151,9 @@
   var tk = function () { return encodeURIComponent(S.token); };
 
   /* ------------------------------------------------------------------
-   * Rodapé (todas as telas)
+   * Faixa de aviso do modo de teste
    * ------------------------------------------------------------------ */
-  function renderRodape() {
-    var v = CFG.VENDEDOR || {};
-    $('#rodape').innerHTML = esc(v.nome_fantasia || 'Dutra Doces') + ' · CNPJ ' + esc(v.cnpj || '') + ' · ' + esc(v.cidade || '') +
-      ' · <a href="/checkout/termos.html" target="_blank" rel="noopener">Termos e políticas</a>';
+  function renderFaixaTeste() {
     if (CFG.MOCK) {
       var b = document.createElement('div');
       b.className = 'aviso info faixa-teste';
@@ -185,7 +182,8 @@
     app.innerHTML =
       '<section class="tela-msg">' +
         '<div class="icone" aria-hidden="true">' + (o.icone || '') + '</div>' +
-        '<h1 class="titulo" tabindex="-1">' + esc(o.titulo) + '</h1>' +
+        '<h1 class="titulo" tabindex="-1">' + (o.tituloHtml || esc(o.titulo)) + '</h1>' +
+        '<div class="ornamento" aria-hidden="true"><span></span></div>' +
         (o.textos || []).map(function (t) { return '<p>' + t + '</p>'; }).join('') +
         '<div class="botoes">' + (o.botoes || '') + '</div>' +
       '</section>';
@@ -197,7 +195,7 @@
   function telaInvalido() {
     S.encerrado = true; pararTudo(); destravar();
     telaMensagem({
-      icone: '🍫', titulo: 'Link não encontrado',
+      icone: '🍫', titulo: 'Link não encontrado', tituloHtml: 'Link não <em>encontrado</em>',
       textos: ['Não encontramos o pedido deste link. Ele pode ter sido digitado incompleto.',
                'Chama a gente no WhatsApp que resolvemos rapidinho!'],
       botoes: botaoWhats('Oi! Recebi um link de pagamento da Dutra Doces, mas ele não abriu.', 'Falar com a Dutra', true)
@@ -208,7 +206,7 @@
     S.encerrado = true; pararTudo(); destravar();
     var n = S.pedido && S.pedido.numero;
     telaMensagem({
-      icone: '⏳', titulo: 'Sua reserva expirou',
+      icone: '⏳', titulo: 'Sua reserva expirou', tituloHtml: 'Sua reserva <em>expirou</em>',
       textos: ['O tempo para garantir este pedido acabou e a vaga foi liberada.',
                'Mas não se preocupe: fale com a gente que vemos se ainda dá para encaixar seus doces.'],
       botoes: botaoWhats(n ? 'Oi! Meu link do pedido ' + n + ' expirou, ainda dá para garantir?' : 'Oi! Meu link de pagamento expirou, ainda dá para garantir?', 'Falar com a Dutra', true),
@@ -220,7 +218,7 @@
     S.encerrado = true; pararTudo(); destravar();
     var n = S.pedido && S.pedido.numero;
     telaMensagem({
-      icone: '🍬', titulo: 'Pedido cancelado',
+      icone: '🍬', titulo: 'Pedido cancelado', tituloHtml: 'Pedido <em>cancelado</em>',
       textos: ['Este pedido foi cancelado e não pode mais ser pago por este link.',
                'Se foi engano ou quiser fazer um novo pedido, fale com a gente.'],
       botoes: botaoWhats(n ? 'Oi! Meu pedido ' + n + ' aparece como cancelado. Pode me ajudar?' : 'Oi! Meu pedido aparece como cancelado. Pode me ajudar?', 'Falar com a Dutra', true)
@@ -238,7 +236,7 @@
       ? 'Pedido nº ' + esc(p.numero) + ' garantido' + (p.data_entrega ? ' para ' + esc(p.data_entrega) : '') + '.'
       : 'Seu pedido está garantido.';
     telaMensagem({
-      icone: '🎉', titulo: 'Pagamento confirmado!',
+      icone: '🎉', titulo: 'Pagamento confirmado!', tituloHtml: 'Pagamento <em>confirmado!</em>',
       textos: ['<strong>' + linha + '</strong>', 'Você vai receber a confirmação no WhatsApp.', 'Obrigada por adoçar seus momentos com a Dutra Doces ★'],
       botoes: botaoWhats(p.numero ? 'Oi! Acabei de pagar o pedido ' + p.numero + '.' : '', 'Falar com a Dutra'),
       anunciar: 'Pagamento confirmado! ' + linha.replace(/<[^>]+>/g, '')
@@ -248,7 +246,7 @@
   function telaErroRede(tentarDeNovo) {
     pararTudo(); destravar();
     telaMensagem({
-      icone: '📶', titulo: 'Sem conexão',
+      icone: '📶', titulo: 'Sem conexão', tituloHtml: 'Sem <em>conexão</em>',
       textos: ['Não conseguimos conectar. Confira sua internet e tente de novo.'],
       botoes: '<button type="button" class="botao cheio" id="btn-tentar">Tentar de novo</button>' + botaoWhats('Oi! Estou tentando pagar meu pedido pelo link, mas a página não carrega.', 'Falar com a Dutra'),
       anunciar: 'Não conseguimos conectar.'
@@ -276,8 +274,8 @@
       tratarStatus(d.status, true);
     }).catch(function (e) {
       if (e && e.rede) return telaErroRede(carregar);
-      if (e && (e.erro === 'link_invalido' || e.status === 404)) return telaInvalido();
       if (e && e.erro === 'link_expirado') return telaExpirado();
+      if (e && (e.erro === 'link_invalido' || e.status === 404)) return telaInvalido();
       telaMensagem({
         icone: '🍫', titulo: 'Ops!',
         textos: [esc(e && e.mensagem || 'Algo deu errado.')],
@@ -376,7 +374,7 @@
     var rotuloPagar = p.parcela === 'sinal' ? 'Sinal a pagar agora' : p.parcela === 'saldo' ? 'Saldo a pagar' : 'A pagar agora';
     linhas += '<tr class="pagar"><td>' + rotuloPagar + '</td><td>' + brl(p.valor_a_pagar) + '</td></tr>';
     return '<section class="cartao" aria-labelledby="t-resumo">' +
-      '<h2 id="t-resumo"><span>Pedido nº ' + esc(p.numero) + '</span>' + etiqueta + '</h2>' +
+      '<h2 id="t-resumo"><span>Seu <em>pedido</em></span>' + etiqueta + '</h2>' +
       '<ul class="itens">' + itens + '</ul>' +
       (p.quantidade_total ? '<p class="oswald" style="color:var(--suave);font-size:.9rem">' + esc(p.quantidade_total) + ' doces no total</p>' : '') +
       '<dl class="info">' +
@@ -394,7 +392,7 @@
         '<p class="oswald">' + esc(FORMAS[p.forma_pagamento] ? FORMAS[p.forma_pagamento].nome : p.forma_pagamento) + '</p></section>';
     }
     var travado = S.pixGerado;
-    return '<section class="cartao" aria-labelledby="t-forma"><h2 id="t-forma">Forma de pagamento</h2>' +
+    return '<section class="cartao" aria-labelledby="t-forma"><h2 id="t-forma">Como você quer <em>pagar?</em></h2>' +
       '<fieldset class="formas"><legend class="sr-only">Escolha a forma de pagamento</legend>' +
       permitidas.map(function (f) {
         return '<label class="forma"><input type="radio" name="forma" value="' + f + '"' +
@@ -410,7 +408,8 @@
     var p = S.pedido;
     app.setAttribute('aria-busy', 'false');
     app.innerHTML =
-      '<h1 class="titulo" tabindex="-1">Finalize seu pedido</h1>' +
+      '<p class="kicker">Pedido nº ' + esc(p.numero) + '</p>' +
+      '<h1 class="titulo" tabindex="-1">Finalize seu <em>pedido</em></h1>' +
       '<p class="sub">' + (p.primeiro_nome ? 'Oi, ' + esc(p.primeiro_nome) + '! ' : '') + 'Falta pouco para garantir seus doces.</p>' +
       '<div class="relogio" id="relogio" role="timer" aria-live="polite" aria-atomic="true">' +
         '<span aria-hidden="true">Sua vaga fica guardada por</span> <strong id="tempo" aria-hidden="true">' + mmss(restanteMs()) + '</strong>' +
@@ -470,7 +469,7 @@
     clearInterval(timers.status); timers.status = null;
     var p = S.pedido;
     if (S.painel === 'pix-inicio') {
-      el.innerHTML = '<h2>Pagar com Pix</h2>' +
+      el.innerHTML = '<h2>Pagar com <em>Pix</em></h2>' +
         '<p style="color:var(--creme)">Geramos um código Pix para você pagar pelo app do seu banco. A confirmação é na hora.</p>' +
         '<div class="botoes"><button type="button" class="botao cheio" id="btn-pix">Gerar Pix de ' + brl(p.valor_a_pagar) + '</button></div>' +
         '<div id="aviso-pix"></div>';
@@ -524,7 +523,7 @@
 
   function renderPix(el) {
     var pix = S.pix;
-    el.innerHTML = '<h2>Pague com Pix</h2>' +
+    el.innerHTML = '<h2>Pague com <em>Pix</em></h2>' +
       '<p class="pix-valor">' + brl(pix.valor) + '</p>' +
       (pix.qr_code_imagem ? '<div class="qr"><img src="' + esc(pix.qr_code_imagem) + '" alt="QR Code do Pix de ' + esc(brl(pix.valor)) + '"></div>' : '') +
       '<label class="sr-only" for="codigo-pix">Código Pix copia e cola</label>' +
@@ -614,7 +613,7 @@
 
   function renderCartao(el) {
     var p = S.pedido;
-    el.innerHTML = '<h2>Pagar com cartão de crédito</h2>' +
+    el.innerHTML = '<h2>Cartão de <em>crédito</em></h2>' +
       '<form id="form-cartao" novalidate autocomplete="on">' +
         campo('cc-numero', 'Número do cartão', '<input id="cc-numero" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" maxlength="23" aria-describedby="cc-numero-msg"><span class="bandeira" id="cc-bandeira" hidden></span>') +
         campo('cc-nome', 'Nome impresso no cartão', '<input id="cc-nome" autocomplete="cc-name" autocapitalize="characters" spellcheck="false" placeholder="COMO ESTÁ NO CARTÃO" maxlength="60" aria-describedby="cc-nome-msg">') +
@@ -781,7 +780,7 @@
     var nome = $('#cc-nome').value.trim().replace(/\s+/g, ' ');
     var cpf = soDigitos($('#cc-cpf').value);
     var parcelas = parseInt($('#cc-parcelas').value, 10) || 1;
-    var bin = numero.slice(0, 6); // 6 primeiros dígitos: o servidor confere os juros do parcelamento
+    var bin = numero.slice(0, 6); // 6 primeiros dígitos: o n8n usa para achar o plano de parcelas
     var btn = $('#btn-pagar');
     btn.disabled = true; btn.textContent = 'Processando…';
     $('#aviso-cartao').innerHTML = '';
@@ -791,7 +790,7 @@
       .then(function (cripto) {
         numero = null; // não guarda o número em memória além do necessário
         limparCartao();
-        return api('POST', 'checkout-cartao', { token: S.token, cartao_criptografado: cripto, bin: bin, titular_nome: nome, titular_cpf: cpf, parcelas: parcelas });
+        return api('POST', 'checkout-cartao', { token: S.token, cartao_criptografado: cripto, titular_nome: nome, titular_cpf: cpf, parcelas: parcelas, bin: bin });
       }, function (erroCripto) {
         destravar(); btn.disabled = false; atualizarBotaoPagar();
         if (erroCripto && erroCripto.campo) { erroCampo(erroCripto.campo, erroCripto.mensagem); $('#' + erroCripto.campo).focus(); }
@@ -837,7 +836,7 @@
    * Início
    * ------------------------------------------------------------------ */
   function iniciar() {
-    renderRodape();
+    renderFaixaTeste();
     if (!CFG.N8N_BASE && !CFG.MOCK) { telaInvalido(); return; }
     if (CFG.MOCK && !window.DutraMock) {
       carregarScript('/checkout/mock.js').then(carregar, function () { telaErroRede(iniciar); });

@@ -10,12 +10,7 @@ window.DUTRA_CONFIG = {
   N8N_BASE: 'https://n8n.mateusbalta.com/webhook', // endereço base dos webhooks do n8n, sem barra no final
   PAGBANK_PUBLIC_KEY: 'TROCAR_CHAVE_PUBLICA', // chave PÚBLICA de criptografia do cartão
   PAGBANK_ENV: 'sandbox',                     // 'sandbox' | 'production'
-  WHATSAPP: '5548991013331',                  // botão "Falar com a Dutra"
+  WHATSAPP: '554791873186',                   // botão "Falar com a Dutra" — (47) 9187-3186
   MAX_PARCELAS: 6,
-  VENDEDOR: {                                 // rodapé obrigatório
-    nome_fantasia: 'Dutra Doces',
-    cnpj: '62.741.391/0001-52',
-    cidade: 'Camboriú/SC'
-  },
   MOCK: false                                 // true = funciona sem n8n, com dados falsos. Em produção: false
 };

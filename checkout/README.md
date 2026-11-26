@@ -9,7 +9,6 @@ credencial fica no n8n. A página não calcula nenhum valor: tudo o que aparece 
 | Arquivo | O que é |
 |---|---|
 | `index.html` | página de checkout |
-| `termos.html` | termos e políticas (preencha os trechos `[PREENCHER]`) |
 | `checkout.css` | estilos (mesma identidade da página principal) |
 | `checkout.js` | lógica da página |
 | `config.js` | **único** lugar com endereços e chaves públicas |
@@ -29,7 +28,7 @@ Os arquivos usam caminhos absolutos (`/checkout/...` e `/assets/...`), porque a 
 | 2 | `POST {N8N_BASE}/checkout-forma` | `{ token, forma_pagamento }` | ao trocar a forma de pagamento |
 | 3 | `POST {N8N_BASE}/checkout-pix` | `{ token }` | botão "Gerar Pix" |
 | 4 | `POST {N8N_BASE}/checkout-parcelas` | `{ token, bin }` | depois dos 6 primeiros dígitos do cartão (e quando eles mudam) |
-| 5 | `POST {N8N_BASE}/checkout-cartao` | `{ token, cartao_criptografado, titular_nome, titular_cpf, parcelas }` | botão "Pagar R$ X" |
+| 5 | `POST {N8N_BASE}/checkout-cartao` | `{ token, cartao_criptografado, titular_nome, titular_cpf, parcelas, bin }` | botão "Pagar R$ X" |
 | 6 | `GET {N8N_BASE}/checkout-status?p={token}` | — | a cada 5 s com o Pix na tela ou o cartão em análise, ao voltar do app do banco, quando o tempo acaba e se a resposta do cartão não chegar |
 
 Códigos de erro tratados pela página: `link_invalido` (ou HTTP 404), `link_expirado`, `pagamento_ja_iniciado`.
@@ -71,23 +70,22 @@ Depois abra `http://localhost:8080/checkout/?p=mock-cartao`.
 
 ## Publicar no subdomínio `checkout`
 
-A página faz parte do mesmo projeto da Vercel do site principal. Cada push na branch `main` publica.
+Este repositório é um projeto separado na Vercel. Cada push na branch `main` publica.
 
-1. **Vercel:** no projeto `dutra-doces-site`, abra **Settings → Domains**, clique em **Add** e adicione `checkout.dutradoces.com.br`.
-2. **Hostinger:** em **DNS / Nameservers → Gerenciar registros DNS**, crie:
+1. **Vercel:** clique em **Add New… → Project**, importe `dutra-doces-checkout` (Framework Preset: **Other**) e clique em **Deploy**.
+2. No projeto novo, abra **Settings → Domains** e adicione `checkout.dutradoces.com.br`. Se esse domínio já estiver no projeto do site principal, remova de lá primeiro.
+3. **Hostinger:** em **DNS / Nameservers → Gerenciar registros DNS**, crie:
 
    | Tipo | Nome | Valor |
    |---|---|---|
    | CNAME | `checkout` | `cname.vercel-dns.com` |
 
    Se a Vercel mostrar outro valor, use o dela.
-3. Espere a Vercel mostrar ✅ **Valid Configuration** e abra `https://checkout.dutradoces.com.br/checkout?p=mock-cartao`.
+4. Espere a Vercel mostrar ✅ **Valid Configuration** e abra `https://checkout.dutradoces.com.br/checkout?p=mock-cartao`.
 
 O `vercel.json` já cuida do resto:
 - quem abrir `checkout.dutradoces.com.br/` sem caminho vai para `dutradoces.com.br`;
 - as páginas do checkout não aparecem no Google (`noindex`), não podem ser embutidas em outro site e não vazam o token pelo `Referer`.
-
-A página também abre em `dutradoces.com.br/checkout`, mas o link oficial é o do subdomínio. O CORS do n8n só vai liberar esse.
 
 ## Passar para produção (`config.js`)
 
