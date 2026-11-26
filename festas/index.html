@@ -26,7 +26,6 @@
         <img src="/assets/img/banners/festas-2560.webp" alt="Mesa de doces de casamento iluminada por velas, com brigadeiros e bombons em forminhas douradas" width="2560" height="1086" fetchpriority="high" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:75% 50%">
       </picture>
       <div class="wrap">
-        <span class="kicker">Festas e casamentos</span>
         <h1 data-linhas>A mesa que seus<br>convidados <em>vão lembrar.</em></h1>
         <p class="lead">Aniversários, casamentos, 15 anos, batizados, formaturas e eventos de empresa. A gente te ajuda a acertar a quantidade e a escolher os sabores.</p>
         <p style="display:flex; gap:12px; flex-wrap:wrap"><a class="btn btn-ouro btn-grande" href="#chat">Montar minha festa</a><a class="btn btn-grande" href="#calculadora">Calcular agora</a></p>
@@ -38,13 +37,11 @@
     <section class="sec" aria-labelledby="t-precos">
       <div class="wrap">
         <div class="centro">
-          <span class="kicker revela">Preços para festa</span>
           <h2 class="titulo-sec revela" id="t-precos">Três linhas, <em>um padrão</em></h2>
           <p class="lead revela">Valores por unidade, em pedidos de 10 em 10 por sabor. Você pode misturar as linhas como quiser.</p>
         </div>
         <div class="cartoes">
           <article class="cartao revela">
-            <span class="kicker">Os clássicos</span>
             <h3>Tradicionais</h3>
             <p class="sub">Brigadeiro, beijinho, casadinho, bicho de pé e os outros que todo mundo procura na mesa.</p>
             <div class="preco"><span class="rs">R$</span><span class="valor">1,90</span><span class="un">a unidade</span></div>
@@ -52,7 +49,6 @@
             <div class="mini-doces"><img src="/assets/img/doces/brigadeiro.webp" alt="" loading="lazy"><img src="/assets/img/doces/beijinho.webp" alt="" loading="lazy"><img src="/assets/img/doces/casadinho.webp" alt="" loading="lazy"><img src="/assets/img/doces/coco-queimado.webp" alt="" loading="lazy"></div>
           </article>
           <article class="cartao revela" style="--atraso:.1s">
-            <span class="kicker">Com um toque especial</span>
             <h3>Gourmet</h3>
             <p class="sub">Brigadeiros cremosos: com morango, churros, paçoca, Oreo, Ninho com Nutella e mais.</p>
             <div class="preco"><span class="rs">R$</span><span class="valor">2,70</span><span class="un">a unidade</span></div>
@@ -61,7 +57,6 @@
           </article>
           <article class="cartao destaque revela" style="--atraso:.2s">
             <span class="etiqueta">Brilham na mesa</span>
-            <span class="kicker">Trufas e bombons</span>
             <h3>Finos</h3>
             <p class="sub">Ganache de chocolate nobre e bombons com fruta ou castanha inteira. São eles que dão o visual.</p>
             <div class="preco"><span class="rs">R$</span><span class="valor">2,90</span><span class="un">a unidade</span></div>
@@ -72,12 +67,28 @@
       </div>
     </section>
 
+    <!-- Fotos reais das caixas de festa -->
+    <section class="sec" aria-labelledby="t-reais">
+      <div class="wrap">
+        <div class="grade-2" style="align-items:end">
+          <h2 class="titulo-sec revela" id="t-reais">Caixas de festa<br>de <em>verdade</em></h2>
+          <p class="lead revela">Fotos tiradas na nossa cozinha, do jeito que as caixas saem para as festas. Os sabores vão lado a lado, em fileiras, cada um na sua forminha.</p>
+        </div>
+        <div class="galeria revela">
+          <figure class="larga"><img src="/assets/img/reais/caixa-sortida-1.webp" alt="Caixa de festa com fileiras de Roche, camafeu, brigadeiro de confete, Laka, brigadeiro, trufa de cereja e bicho de pé" loading="lazy" width="1400" height="556"><figcaption>Sortida: Roche, camafeu, confete, Laka, brigadeiro e bicho de pé</figcaption></figure>
+          <figure class="alta"><img src="/assets/img/reais/caixa-vermelha.webp" alt="Bombons de cereja, trufas com espiral branca, Roche e trufas rendadas em forminhas vinho" loading="lazy" width="695" height="1400"><figcaption>Finos em forminha vinho</figcaption></figure>
+          <figure><img src="/assets/img/reais/caixa-bombons.webp" alt="Bombons de morango com listras brancas e bombons de uva em forminhas coloridas" loading="lazy" width="695" height="1400"><figcaption>Bombons de morango e de uva</figcaption></figure>
+          <figure class="so-desk"><img src="/assets/img/reais/caixa-colorida.webp" alt="Bombons de damasco, trufas rendadas e trufas brancas em forminhas azuis, verdes, vermelhas e amarelas" loading="lazy" width="695" height="1400"><figcaption>Damasco, trufas e Laka</figcaption></figure>
+          <figure class="larga cheia"><img src="/assets/img/reais/caixa-beijinhos.webp" alt="Caixa com beijinhos com rosa de ganache, olho de sogra, cajuzinho e bombons com amendoim" loading="lazy" width="1400" height="556"><figcaption>Beijinho, olho de sogra, cajuzinho e baianinho</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
     <!-- Calculadora -->
     <section class="sec sec-radial" id="calculadora" aria-labelledby="t-calc">
       <div class="wrap">
         <div class="grade-2" style="align-items:end">
           <div>
-            <span class="kicker revela">Calculadora de doces</span>
             <h2 class="titulo-sec revela" id="t-calc">Quantos doces<br>a sua festa <em class="ouro-txt">pede?</em></h2>
           </div>
           <p class="lead revela">Em média, de 6 a 8 por pessoa. Com mesa montada, recomendamos de 20% a 30% de finos, que decoram, e o restante em tradicionais e gourmet, os mais consumidos.</p>
@@ -115,7 +126,6 @@
             </div>
           </div>
           <div class="resultado" aria-live="polite">
-            <span class="kicker">Sugestão</span>
             <p class="total"><span data-total>0</span><small>doces · <span data-pp>7</span> por pessoa</small></p>
             <div class="barras">
               <div><div class="barra-l"><span>Finos (trufas e bombons)</span><b data-q="finos">0</b></div><div class="barra finos"><i data-b="finos"></i></div></div>
@@ -134,7 +144,6 @@
     <section class="sec sec-creme" aria-labelledby="t-mesa">
       <div class="wrap grade-2">
         <div>
-          <span class="kicker revela">Dica de quem faz há 25 anos</span>
           <h2 class="titulo-sec revela" id="t-mesa">Uma mesa bonita<br>e uma mesa que <em>acaba bem</em></h2>
           <ul class="lista-ouro revela">
             <li><span><b>Finos na frente:</b> trufas e bombons nas bandejas de destaque e nas torres. São os mais fotografados.</span></li>
@@ -159,9 +168,8 @@
     <section class="sec" aria-labelledby="t-pro">
       <div class="wrap grade-2">
         <div>
-          <span class="kicker revela">Para cerimonialistas e casas de festa</span>
-          <h2 class="titulo-sec revela" id="t-pro">Um fornecedor<br>que <em>não te deixa na mão</em></h2>
-          <p class="lead revela">Se você organiza eventos, fala com a gente. Atendemos assessorias, buffets e casas de festa com cardápio completo e condições para parceiros.</p>
+          <h2 class="titulo-sec revela" id="t-pro">Cerimonialistas<br>e casas de <em>festa</em></h2>
+          <p class="lead revela">Atendemos assessorias, buffets e casas de festa com o cardápio completo e condições para parceiros. Conte quantos eventos vocês fazem por mês e a gente monta a proposta.</p>
           <p class="revela" style="margin-top:28px"><a class="btn btn-ouro btn-grande" href="#chat">Sou profissional de eventos</a></p>
         </div>
         <div class="faq revela" style="margin:0">
@@ -174,7 +182,6 @@
 
     <section class="chamada-final" aria-labelledby="t-final">
       <div class="wrap">
-        <span class="kicker">Sua festa começa aqui</span>
         <h2 id="t-final">Conta pra gente<br>a <em class="ouro-txt">data</em>.</h2>
         <div class="acoes"><a class="btn btn-ouro btn-grande" href="#chat">Montar minha festa</a><a class="btn btn-grande" href="#whats:Olá! Quero orçamento de doces para festa.">WhatsApp</a></div>
       </div>

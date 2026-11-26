@@ -58,9 +58,14 @@ button { cursor: pointer; background: none; border: 0; }
 /* ---------- tipografia ---------- */
 .serif, h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.05; letter-spacing: -.01em; }
 h1 em, h2 em, h3 em, .serif em { font-style: italic; font-weight: 500; }
-.ouro-txt {
-  background: var(--ouro-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
-}
+.ouro-txt { color: var(--ouro-claro); }
+.sec-creme .ouro-txt { color: var(--ouro-escuro); }
+html { scrollbar-color: var(--cacau) var(--ganache-3); caret-color: var(--ouro-claro); }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--ganache-3); }
+::-webkit-scrollbar-thumb { background: var(--cacau); border-radius: 8px; border: 2px solid var(--ganache-3); }
+::-webkit-scrollbar-thumb:hover { background: var(--ouro-escuro); }
+a { text-underline-offset: .2em; }
 .kicker {
   font-family: var(--sans); font-weight: 700; font-size: .74rem; letter-spacing: .28em; text-transform: uppercase;
   color: var(--ouro); display: inline-flex; align-items: center; gap: .9em;
@@ -236,7 +241,7 @@ h1 em, h2 em, h3 em, .serif em { font-style: italic; font-weight: 500; }
 .faixa-corre .trilho { display: flex; width: max-content; animation: corre 38s linear infinite; }
 .faixa-corre:hover .trilho { animation-play-state: paused; }
 .faixa-corre span { font-family: var(--serif); font-style: italic; font-size: clamp(1.3rem, 2.6vw, 2rem); white-space: nowrap; padding-inline: 28px; display: flex; align-items: center; gap: 56px; }
-.faixa-corre span::after { content: "✦"; font-style: normal; font-size: .6em; color: var(--ouro); }
+.faixa-corre span::after { content: ""; width: 7px; height: 7px; background: var(--ouro); transform: rotate(45deg); flex: none; }
 @keyframes corre { to { transform: translateX(-50%); } }
 
 /* ---------- doces flutuando (conceito de movimento) ---------- */
@@ -316,6 +321,7 @@ h1 em, h2 em, h3 em, .serif em { font-style: italic; font-weight: 500; }
 @media (min-width: 760px) { .ficha-info { padding-block: 48px; } }
 .ficha-info h2 { font-size: clamp(2.2rem, 4vw, 3.2rem); margin: .25em 0 .3em; }
 .ficha-info p { color: var(--texto-suave); }
+.ficha-info .ficha-linha { font-family: var(--serif); font-style: italic; color: var(--ouro-claro); font-size: 1.15rem; margin: -.2em 0 .8em; }
 .ficha-info .variantes { margin: 16px 0 6px; }
 .ficha-precos { margin-top: 22px; display: grid; gap: 8px; border-top: 1px solid var(--linha); padding-top: 18px; font-size: .9rem; }
 .ficha-precos div { display: flex; justify-content: space-between; gap: 12px; }
@@ -606,3 +612,17 @@ fieldset.entrada { border: 0; }
 
 /* atendimento: no celular o chat vem logo depois do título */
 @media (max-width: 899px) { .so-desk { display: none !important; } }
+
+/* ---------- galeria de fotos reais ---------- */
+.galeria { display: grid; gap: 12px; margin-top: 44px; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 170px; grid-auto-flow: dense; }
+@media (min-width: 900px) { .galeria { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 250px; gap: 16px; } }
+.galeria figure { position: relative; overflow: hidden; border-radius: 20px; background: var(--ganache-2); grid-row: span 2; }
+.galeria figure.larga { grid-column: 1 / -1; grid-row: span 1; }
+@media (min-width: 900px) {
+  .galeria figure.larga { grid-column: span 2; }
+  .galeria figure.alta { grid-row: span 3; }
+  .galeria figure.cheia { grid-column: 1 / -1; }
+}
+.galeria img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+.galeria figure:hover img { transform: scale(1.05); }
+.galeria figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 16px 14px; font-size: .82rem; color: var(--creme); background: linear-gradient(0deg, rgba(22, 9, 4, .85), transparent); }

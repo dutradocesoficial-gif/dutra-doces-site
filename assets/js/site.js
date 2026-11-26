@@ -200,7 +200,7 @@
       var cta = function (c, cls) { return c ? '<a class="btn ' + cls + '" href="' + DD.esc(c.href) + '">' + c.rotulo + '</a>' : ''; };
       return '<div class="slide' + (k === 0 ? ' ativo' : '') + '" role="group" aria-roledescription="banner" aria-label="' + (k + 1) + ' de ' + bs.length + '"' + (k ? ' aria-hidden="true"' : '') + '>' +
         '<picture><source media="(max-width: 900px)" srcset="' + b.imgMobile + '"><img src="' + b.img + '" alt="' + DD.esc(b.alt) + '" width="2560" height="1086"' + (k ? ' loading="lazy"' : ' fetchpriority="high"') + '></picture>' +
-        '<div class="slide-txt"><span class="kicker anim">' + b.selo + '</span>' +
+        '<div class="slide-txt">' +
         '<' + tag + ' class="anim">' + b.titulo + '</' + tag + '>' +
         '<p class="anim">' + b.texto + '</p>' +
         '<div class="acoes anim">' + cta(b.cta, 'btn-ouro btn-grande') + cta(b.cta2, 'btn-grande') + '</div></div></div>';
@@ -361,7 +361,7 @@
     ficha.innerHTML = '<div class="ficha-fundo" data-fechar></div><div class="ficha-caixa">' +
       '<button class="fechar" type="button" data-fechar aria-label="Fechar">' + ICON.x + '</button>' +
       '<div class="ficha-palco"><img alt="" width="720" height="720"></div>' +
-      '<div class="ficha-info"><span class="kicker" data-linha></span><h2 id="ficha-nome"></h2><p data-desc></p><div data-vars></div>' +
+      '<div class="ficha-info"><h2 id="ficha-nome"></h2><p class="ficha-linha" data-linha></p><p data-desc></p><div data-vars></div>' +
       '<div class="ficha-precos"></div>' +
       '<div class="ficha-acoes"><a class="btn btn-ouro" data-pedir target="_blank" rel="noopener">' + ICON.whats + ' Pedir este sabor</a><a class="btn" href="#chat">Montar minha festa</a></div>' +
       '<div class="ficha-nav"><button type="button" data-nav="-1">‹ Anterior</button><button type="button" data-nav="1">Próximo ›</button></div>' +

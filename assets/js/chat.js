@@ -151,12 +151,12 @@
   function iniciar() {
     L = { id: idConversa };
     diz([
-      'Olá! Eu sou o assistente da <b>Dutra Doces</b> 👋',
+      'Olá! Eu sou o assistente da <b>Dutra Doces</b>.',
       'Desde 2001 a gente adoça aniversários, casamentos, 15 anos, batizados, formaturas e eventos de empresa.',
       'Vamos montar a sua festa? Antes de tudo, como posso te chamar?'
     ]).then(function () {
       pedeTexto({ placeholder: 'Seu nome', autocomplete: 'name',
-        validar: function (v) { return String(v).trim().length < 2 ? 'Pode me dizer seu nome? 😊' : ''; },
+        validar: function (v) { return String(v).trim().length < 2 ? 'Pode me dizer seu nome?' : ''; },
         ao: function (v) { L.nome = String(v).trim(); passoFone(); } });
     });
   }
@@ -175,7 +175,7 @@
   }
 
   function passoPerfil() {
-    diz(['Anotado ✓', 'Me tira uma dúvida: você está organizando uma festa ou fala por uma empresa de eventos?']).then(function () {
+    diz(['Anotado.', 'Me tira uma dúvida: você está organizando uma festa ou fala por uma empresa de eventos?']).then(function () {
       pedeOpcao([
         { rotulo: 'Estou organizando minha festa', v: 'cliente' },
         { rotulo: 'Sou cerimonialista ou assessor(a)', v: 'cerimonialista' },
@@ -259,7 +259,7 @@
 
   // ----- cliente final: festa -----
   function passoTipoFesta() {
-    diz(['Oba, adoramos festa! 🎉 Que tipo de comemoração vai ser?']).then(function () {
+    diz(['Que delícia, vamos de festa. Que tipo de comemoração vai ser?']).then(function () {
       pedeOpcao([
         { rotulo: 'Aniversário' }, { rotulo: 'Casamento' }, { rotulo: '15 anos' }, { rotulo: 'Batizado ou chá' },
         { rotulo: 'Formatura' }, { rotulo: 'Evento de empresa' }, { rotulo: 'Outra' }
@@ -273,7 +273,7 @@
           if (v === 'a definir') return '';
           var d = new Date(v + 'T12:00:00'); if (isNaN(d)) return 'Escolha a data no calendário, por favor.';
           var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-          return d < hoje ? 'Essa data já passou 😅 Qual é a data da festa?' : '';
+          return d < hoje ? 'Essa data já passou. Qual é a data da festa?' : '';
         },
         mostrar: function (v) { return v === 'a definir' ? 'Ainda não sei' : fmtData(v); },
         ao: function (v) {
@@ -339,7 +339,7 @@
       '<div><span>Tradicionais</span><b>' + r.tradicionais + '</b></div>' +
       '<div><span>Investimento estimado</span><b>' + DD.brl(r.valor) + '</b></div></div>';
     diz([
-      'Pronto, ' + DD.esc(primeiro(L.nome)) + '! Fiz as contas 🧮',
+      'Pronto, ' + DD.esc(primeiro(L.nome)) + '. Fiz as contas.',
       'Em média, as festas pedem de 6 a 8 doces por pessoa, conforme a duração e o que mais vai ter. Para a sua, sugerimos <b>' + r.porPessoa + ' por pessoa</b>: cerca de <b>' + r.total + ' doces</b>.',
       expl,
       'Sugestão para ' + L.convidados + ' convidados:' + resumo,

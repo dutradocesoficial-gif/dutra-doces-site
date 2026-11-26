@@ -30,8 +30,13 @@ assets/
   js/chat.js            assistente de atendimento
   img/doces/            43 fotos dos doces, fundo transparente (webp 720 px)
   img/banners/          banners 21:9 em 2560 px (computador) e 1280 px (celular)
-  img/marca/            logo SVG, mascote Dutra, onda vinho, favicon, caixa
+  img/marca/            logo SVG, mascote Dutra, onda vinho, favicon, caixa de presente e caixa de revendedor
+  img/reais/            fotos reais das caixas de festa (pasta "04 Caixas de festa" do Drive)
 ```
+
+Os banners foram gerados no Nano Banana 2.1 (Magnific) usando como referência as fotos reais do Drive
+("04 Caixas de festa" e "01 Grandes 60g") e a arte final da tampa da caixa 35x35x6 v8.
+O site segue as skills `sophos-site-copy`, `sophos-site-design` e `sophos-prompt-imagem` do repositório kit-skills.
 
 O cabeçalho e o rodapé são montados pelo `site.js`; para mudar o menu, edite a lista `NAV` nesse arquivo.
 
