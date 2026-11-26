@@ -20,6 +20,9 @@ window.DUTRA_SITE = {
   // Revenda: doce grande, preço final sugerido ao consumidor
   REVENDA: { precoMin: 12, precoMax: 20, lucroMax: 0.5 },
 
+  // Tempo de cada banner na tela, em segundos
+  BANNER_SEGUNDOS: 5,
+
   // Banners do topo da página inicial (passam sozinhos). Para incluir um novo,
   // copie um bloco, troque as imagens (2560 e 1280 px de largura, 21:9) e os textos.
   BANNERS: [
