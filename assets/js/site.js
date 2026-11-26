@@ -194,7 +194,7 @@
   function hero() {
     var el = $('[data-hero]');
     if (!el || !CFG.BANNERS) return;
-    var bs = CFG.BANNERS, dur = 7000, i = 0, timer;
+    var bs = CFG.BANNERS, dur = CFG.BANNER_SEGUNDOS ? CFG.BANNER_SEGUNDOS * 1000 : 5000, i = 0, timer;
     el.innerHTML = bs.map(function (b, k) {
       var tag = k === 0 ? 'h1' : 'h2';
       var cta = function (c, cls) { return c ? '<a class="btn ' + cls + '" href="' + DD.esc(c.href) + '">' + c.rotulo + '</a>' : ''; };
