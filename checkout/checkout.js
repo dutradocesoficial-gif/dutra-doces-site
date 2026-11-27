@@ -134,7 +134,8 @@
 
   function api(metodo, rota, corpo) {
     if (CFG.MOCK && window.DutraMock) return window.DutraMock.chamar(metodo, rota, corpo);
-    var url = CFG.N8N_BASE.replace(/\/+$/, '') + '/' + rota;
+    var nomeRota = rota.split('?')[0], qs = rota.slice(nomeRota.length);
+    var url = (CFG.ROTAS && CFG.ROTAS[nomeRota]) ? CFG.ROTAS[nomeRota] + qs : CFG.N8N_BASE.replace(/\/+$/, '') + '/' + rota;
     var ctrl = window.AbortController ? new AbortController() : null;
     var limite = setTimeout(function () { if (ctrl) ctrl.abort(); }, 25000);
     var opcoes = { method: metodo, headers: { 'Accept': 'application/json' }, cache: 'no-store', signal: ctrl && ctrl.signal };

@@ -8,6 +8,9 @@
  */
 window.DUTRA_CONFIG = {
   N8N_BASE: 'https://n8n.mateusbalta.com/webhook', // endereço base dos webhooks do n8n, sem barra no final
+  ROTAS: {                                    // endereço completo de um webhook específico (sobrepõe N8N_BASE)
+    'checkout-entrega': 'https://n8n.mateusbalta.com/webhook/checkout-entrega' // edita endereço/bairro/CEP e recalcula a taxa
+  },
   PAGBANK_PUBLIC_KEY: 'TROCAR_CHAVE_PUBLICA', // chave PÚBLICA de criptografia do cartão
   PAGBANK_ENV: 'sandbox',                     // 'sandbox' | 'production'
   WHATSAPP: '5548991013331',                  // botão "Falar com a Dutra"
