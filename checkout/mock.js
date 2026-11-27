@@ -33,8 +33,15 @@ window.DutraMock = (function () {
       itens: [{ nome: 'Mistão Clássico 150', quantidade: 1 }],
       quantidade_total: 150, data_entrega: '23/12', modalidade: 'entrega',
       subtotal: 225.00, frete: 18.00, desconto: 0, valor_total: 243.00, valor_a_pagar: 243.00,
-      parcela: 'integral', forma_pagamento: 'cartao', formas_permitidas: ['cartao', 'pix_integral', 'pix_50']
+      parcela: 'integral', forma_pagamento: 'cartao', formas_permitidas: ['cartao', 'pix_integral', 'pix_50'],
+      entrega: { modalidade: 'entrega', endereco: 'Rua 1500, 200, ap 301', bairro: 'Centro', cep: '88330000', janela: null, taxa: 15.00, editavel: true,
+                 endereco_retirada: 'R. Monte Bonete, 136 - Monte Alegre, Camboriú' },
+      bairros_atendidos: [
+        { bairro: 'Monte Alegre', cidade: 'Camboriú', valor: 12.50 }, { bairro: 'Centro', cidade: 'Balneário Camboriú', valor: 15.00 },
+        { bairro: 'Barra Sul', cidade: 'Balneário Camboriú', valor: 17.50 }, { bairro: 'Pioneiros', cidade: 'Balneário Camboriú', valor: 20.00 }
+      ]
     };
+    base.frete = 15.00; base.valor_total = 240.00; base.valor_a_pagar = 240.00;
     var reg = { status: 'aguardando_pagamento', expira: Date.now() + 58 * MIN, pedido: base, pixEm: null, pagoEm: null, cartao: 'pago' };
     switch (token) {
       case 'mock-cartao': break;
@@ -43,10 +50,11 @@ window.DutraMock = (function () {
       case 'mock-pix': aplicarForma(base, 'pix_integral'); break;
       case 'mock-sinal':
         base.itens = [{ nome: 'Bombons finos sortidos', quantidade: 2 }, { nome: 'Brigadeiro gourmet', quantidade: 100 }];
-        base.quantidade_total = 160; base.modalidade = 'retirada'; base.frete = 0; base.subtotal = 312.00; base.data_entrega = '24/12';
+        base.quantidade_total = 160; base.modalidade = 'retirada'; base.frete = 0; base.entrega.modalidade = 'retirada'; base.subtotal = 312.00; base.data_entrega = '24/12';
         aplicarForma(base, 'pix_50'); break;
       case 'mock-saldo':
         base.modalidade = 'retirada'; base.frete = 0; base.subtotal = 312.00; base.data_entrega = '24/12';
+        base.entrega.modalidade = 'retirada'; base.entrega.editavel = false; base.bairros_atendidos = [];
         aplicarForma(base, 'pix_50');
         base.parcela = 'saldo'; base.forma_pagamento = 'pix_integral'; base.formas_permitidas = ['pix_integral'];
         base.valor_a_pagar = r2(base.valor_total - r2(base.valor_total / 2)); break;
@@ -123,7 +131,23 @@ window.DutraMock = (function () {
       aplicarForma(r.pedido, corpo.forma_pagamento);
       return resposta(200, r.pedido);
     }
+    if (nome === 'checkout-entrega') {
+      var p = r.pedido;
+      if (r.pixEm || !p.entrega.editavel) return erro(409, 'pagamento_ja_iniciado', 'O pagamento já foi iniciado. Para mudar a entrega, fale com a gente no WhatsApp.');
+      if (corpo.modalidade === 'retirada') {
+        p.frete = 0; p.entrega.endereco = null; p.entrega.bairro = null; p.entrega.cep = null;
+      } else {
+        var b = p.bairros_atendidos.filter(function (x) { return x.bairro === corpo.bairro; })[0];
+        if (!b) return erro(400, 'fora_da_area', 'Ainda não entregamos nesse bairro. Você pode escolher retirada.');
+        if (String(corpo.cep || '').length !== 8) return erro(400, 'cep_invalido', 'Informe um CEP com 8 números.');
+        p.frete = b.valor; p.entrega.endereco = corpo.endereco; p.entrega.bairro = b.bairro; p.entrega.cep = corpo.cep;
+      }
+      p.modalidade = corpo.modalidade; p.entrega.modalidade = corpo.modalidade; p.entrega.taxa = p.frete;
+      aplicarForma(p, p.forma_pagamento);
+      return resposta(200, p);
+    }
     if (nome === 'checkout-pix') {
+      r.pedido.entrega.editavel = false;
       if (!r.pixEm) { r.pixEm = Date.now(); r.pagoEm = Date.now() + 15000; }
       return resposta(200, {
         qr_code_texto: '00020126580014br.gov.bcb.pix0136TESTE-DUTRA-DOCES-NAO-PAGUE52040000530398654' + r.pedido.valor_a_pagar.toFixed(2) + '5802BR5911DUTRA DOCES6008CAMBORIU62070503***6304ABCD',

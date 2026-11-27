@@ -117,7 +117,9 @@
     ultimoMinuto: null,
     parcelas: null,     // opções do endpoint 4
     binAtual: '',
-    rastreouPago: false
+    rastreouPago: false,
+    editandoEntrega: false,
+    rascunho: null      // { modalidade, endereco, bairro, cep } enquanto edita a entrega
   };
   var timers = { relogio: null, status: null, parcelas: null };
 
@@ -370,7 +372,7 @@
       return '<li><span class="qtd">' + esc(i.quantidade) + 'x</span><span>' + esc(i.nome) + '</span></li>';
     }).join('');
     var linhas = '<tr><td>Subtotal</td><td>' + brl(p.subtotal) + '</td></tr>';
-    if (p.modalidade === 'entrega' || Number(p.frete) > 0) linhas += '<tr><td>Frete</td><td>' + brl(p.frete) + '</td></tr>';
+    if (p.modalidade === 'entrega' || Number(p.frete) > 0) linhas += '<tr><td>Taxa de entrega' + (p.entrega && p.entrega.bairro ? ' · ' + esc(p.entrega.bairro) : '') + '</td><td>' + brl(p.frete) + '</td></tr>';
     if (Number(p.desconto) > 0) linhas += '<tr class="desconto"><td>Desconto</td><td>− ' + brl(p.desconto) + '</td></tr>';
     linhas += '<tr class="total"><td>Total do pedido</td><td>' + brl(p.valor_total) + '</td></tr>';
     var rotuloPagar = p.parcela === 'sinal' ? 'Sinal a pagar agora' : p.parcela === 'saldo' ? 'Saldo a pagar' : 'A pagar agora';
@@ -406,6 +408,167 @@
       '<div id="aviso-forma"></div></section>';
   }
 
+  /* ------------------------------------------------------------------
+   * Entrega / retirada (endpoint checkout-entrega)
+   * O valor da taxa mostrado ao escolher o bairro é só prévia:
+   * quem calcula e grava é o banco, e a página re-renderiza com o retorno.
+   * ------------------------------------------------------------------ */
+  function entregaDe(p) {
+    var e = p.entrega || {};
+    return {
+      modalidade: e.modalidade || p.modalidade,
+      endereco: e.endereco || '', bairro: e.bairro || '', cep: e.cep || '',
+      janela: e.janela || '', taxa: e.taxa != null ? e.taxa : p.frete,
+      editavel: !!e.editavel && !S.pixGerado,
+      retirada: e.endereco_retirada || ''
+    };
+  }
+  function fmtCep(v) { var d = soDigitos(v).slice(0, 8); return d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d; }
+  function bairroInfo(nome) {
+    var lista = (S.pedido && S.pedido.bairros_atendidos) || [];
+    for (var i = 0; i < lista.length; i++) if (lista[i].bairro === nome) return lista[i];
+    return null;
+  }
+
+  function htmlEntrega(p) {
+    var e = entregaDe(p);
+    if (e.editavel && S.editandoEntrega) return htmlEntregaForm(p, e);
+    var corpo;
+    if (e.modalidade === 'retirada') {
+      corpo = '<p class="end-linha"><strong>Retirada</strong> na Dutra Doces</p>' +
+        (e.retirada ? '<p class="end-det">' + esc(e.retirada) + '</p>' : '') +
+        '<p class="end-taxa"><span>Taxa de entrega</span><strong>Sem taxa</strong></p>';
+    } else {
+      corpo = '<p class="end-linha"><strong>' + esc(e.endereco || 'Endereço não informado') + '</strong></p>' +
+        '<p class="end-det">' + esc([e.bairro, e.cep ? 'CEP ' + fmtCep(e.cep) : ''].filter(Boolean).join(' · ')) + '</p>' +
+        (e.janela ? '<p class="end-det">Janela: ' + esc(e.janela) + '</p>' : '') +
+        '<p class="end-taxa"><span>Taxa de entrega</span><strong>' + brl(e.taxa) + '</strong></p>';
+    }
+    return '<section class="cartao" aria-labelledby="t-entrega">' +
+      '<h2 id="t-entrega"><span>' + (e.modalidade === 'retirada' ? 'Onde você <em>retira</em>' : 'Onde <em>entregamos</em>') + '</span>' +
+        (e.editavel ? '<button type="button" class="link-botao" id="btn-editar-entrega">Editar</button>' : '') + '</h2>' +
+      corpo +
+      (!e.editavel && p.entrega && S.pedido.parcela !== 'saldo' ? '<p class="end-det">Para mudar a entrega agora, fale com a gente no WhatsApp.</p>' : '') +
+      '<div id="aviso-entrega"></div></section>';
+  }
+
+  function htmlEntregaForm(p, e) {
+    var r = S.rascunho || (S.rascunho = { modalidade: e.modalidade, endereco: e.endereco, bairro: e.bairro, cep: fmtCep(e.cep) });
+    var lista = p.bairros_atendidos || [];
+    var opcoes = '<option value="">Escolha o bairro</option>' + lista.map(function (b) {
+      return '<option value="' + esc(b.bairro) + '"' + (b.bairro === r.bairro ? ' selected' : '') + '>' +
+        esc(b.bairro) + ' · ' + brl(b.valor) + '</option>';
+    }).join('');
+    var info = bairroInfo(r.bairro);
+    var ent = r.modalidade === 'entrega';
+    return '<section class="cartao" aria-labelledby="t-entrega">' +
+      '<h2 id="t-entrega">Como você quer <em>receber?</em></h2>' +
+      '<form id="form-entrega" novalidate>' +
+      '<fieldset class="formas"><legend class="sr-only">Entrega ou retirada</legend>' +
+        '<label class="forma"><input type="radio" name="modalidade" value="entrega"' + (ent ? ' checked' : '') + '>' +
+          '<span><span class="nome">Entrega</span><span class="det">Taxa conforme o bairro</span></span></label>' +
+        '<label class="forma"><input type="radio" name="modalidade" value="retirada"' + (!ent ? ' checked' : '') + '>' +
+          '<span><span class="nome">Retirada</span><span class="det">' + esc(e.retirada || 'Na Dutra Doces') + ' · sem taxa</span></span></label>' +
+      '</fieldset>' +
+      (ent ?
+        '<div class="campos-entrega">' +
+          '<div class="campo" id="c-end"><label for="ent-endereco">Rua, número e complemento</label>' +
+            '<input id="ent-endereco" autocomplete="street-address" maxlength="200" value="' + esc(r.endereco) + '" placeholder="Ex.: Rua 1500, 200, ap 301"><span class="msg"></span></div>' +
+          '<div class="linha2">' +
+            '<div class="campo" id="c-bairro"><label for="ent-bairro">Bairro</label><select id="ent-bairro">' + opcoes + '</select><span class="msg"></span></div>' +
+            '<div class="campo" id="c-cep"><label for="ent-cep">CEP</label>' +
+              '<input id="ent-cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" value="' + esc(r.cep) + '" placeholder="00000-000"><span class="msg"></span></div>' +
+          '</div>' +
+          '<p class="end-taxa" id="previa-taxa"><span>Taxa de entrega</span><strong>' + (info ? brl(info.valor) : '—') + '</strong></p>' +
+          '<p class="end-det">Não achou seu bairro? Ainda não entregamos lá — escolha retirada ou fale com a gente.</p>' +
+        '</div>'
+        : '<p class="end-taxa"><span>Taxa de entrega</span><strong>Sem taxa</strong></p>') +
+      '<div class="botoes"><button type="submit" class="botao cheio" id="btn-salvar-entrega">Salvar e atualizar valor</button>' +
+        '<button type="button" class="link-botao" id="btn-cancelar-entrega">Cancelar</button></div>' +
+      '</form><div id="aviso-entrega"></div></section>';
+  }
+
+  function ligarEntrega() {
+    var btEd = $('#btn-editar-entrega');
+    if (btEd) btEd.addEventListener('click', function () {
+      if (S.ocupado) return;
+      S.editandoEntrega = true; S.rascunho = null;
+      renderPrincipal(); atualizarRelogio();
+      var f = $('#ent-endereco') || $('input[name="modalidade"]:checked'); if (f) f.focus();
+    });
+    var form = $('#form-entrega'); if (!form) return;
+    Array.prototype.forEach.call(form.querySelectorAll('input[name="modalidade"]'), function (rd) {
+      rd.addEventListener('change', function () {
+        guardarRascunho(); S.rascunho.modalidade = rd.value;
+        renderPrincipal(); atualizarRelogio();
+        var alvo = $('input[name="modalidade"]:checked'); if (alvo) alvo.focus();
+      });
+    });
+    var cep = $('#ent-cep');
+    if (cep) cep.addEventListener('input', function () { cep.value = fmtCep(cep.value); erroEntrega('c-cep', ''); guardarRascunho(); });
+    var end = $('#ent-endereco');
+    if (end) end.addEventListener('input', function () { erroEntrega('c-end', ''); guardarRascunho(); });
+    var sel = $('#ent-bairro');
+    if (sel) sel.addEventListener('change', function () {
+      erroEntrega('c-bairro', ''); guardarRascunho();
+      var info = bairroInfo(sel.value), alvo = $('#previa-taxa strong');
+      if (alvo) alvo.textContent = info ? brl(info.valor) : '—';
+    });
+    $('#btn-cancelar-entrega').addEventListener('click', function () {
+      S.editandoEntrega = false; S.rascunho = null; renderPrincipal(); atualizarRelogio();
+      var b = $('#btn-editar-entrega'); if (b) b.focus();
+    });
+    form.addEventListener('submit', function (ev) { ev.preventDefault(); salvarEntrega(); });
+  }
+
+  function guardarRascunho() {
+    var r = S.rascunho || (S.rascunho = {});
+    var end = $('#ent-endereco'), sel = $('#ent-bairro'), cep = $('#ent-cep');
+    if (end) r.endereco = end.value;
+    if (sel) r.bairro = sel.value;
+    if (cep) r.cep = cep.value;
+  }
+
+  function erroEntrega(id, msg) {
+    var c = document.getElementById(id); if (!c) return !msg;
+    c.classList.toggle('invalido', !!msg);
+    var m = c.querySelector('.msg'); if (m) m.textContent = msg || '';
+    return !msg;
+  }
+
+  function salvarEntrega() {
+    if (S.ocupado || S.encerrado) return;
+    guardarRascunho();
+    var r = S.rascunho, ok = true;
+    if (r.modalidade === 'entrega') {
+      if (String(r.endereco || '').trim().length < 6) ok = erroEntrega('c-end', 'Informe rua, número e complemento.') && ok;
+      if (!r.bairro) ok = erroEntrega('c-bairro', 'Escolha o bairro.') && ok;
+      if (soDigitos(r.cep).length !== 8) ok = erroEntrega('c-cep', 'CEP com 8 números.') && ok;
+      if (!ok) { var inv = $('.campo.invalido input, .campo.invalido select'); if (inv) inv.focus(); return; }
+    }
+    S.ocupado = true;
+    var bt = $('#btn-salvar-entrega'); if (bt) { bt.disabled = true; bt.textContent = 'Atualizando…'; }
+    var corpo = { token: S.token, modalidade: r.modalidade };
+    if (r.modalidade === 'entrega') { corpo.endereco = String(r.endereco).trim(); corpo.bairro = r.bairro; corpo.cep = soDigitos(r.cep); }
+    api('POST', 'checkout-entrega', corpo).then(function (pedido) {
+      S.ocupado = false;
+      S.pedido = pedido.pedido || pedido;
+      S.editandoEntrega = false; S.rascunho = null;
+      S.parcelas = null; S.binAtual = '';
+      S.painel = painelPadrao();
+      renderPrincipal(); atualizarRelogio();
+      anunciar('Entrega atualizada. Taxa de entrega: ' + brl(S.pedido.frete) + '. Valor a pagar: ' + brl(S.pedido.valor_a_pagar) + '.');
+      var b = $('#btn-editar-entrega'); if (b) b.focus();
+    }).catch(function (e) {
+      S.ocupado = false;
+      if (e && e.erro === 'link_expirado') return telaExpirado();
+      if (e && e.erro === 'pagamento_ja_iniciado') { S.pixGerado = true; S.editandoEntrega = false; }
+      renderPrincipal(); atualizarRelogio();
+      mostrarAviso($('#aviso-entrega'), e && e.rede ? 'Não conseguimos conectar. Tente de novo.' : (e && e.mensagem) || 'Não foi possível atualizar a entrega agora.',
+        e && e.rede ? salvarEntrega : null);
+    });
+  }
+
   function renderPrincipal() {
     var p = S.pedido;
     app.setAttribute('aria-busy', 'false');
@@ -417,12 +580,14 @@
         '<span class="sr-only" id="tempo-sr"></span>' +
       '</div>' +
       htmlResumo(p) +
+      htmlEntrega(p) +
       htmlFormas(p) +
       '<section class="cartao" id="painel" aria-live="polite"></section>';
     S.ultimoMinuto = null;
     Array.prototype.forEach.call(app.querySelectorAll('input[name="forma"]'), function (r) {
       r.addEventListener('change', function () { trocarForma(r.value); });
     });
+    ligarEntrega();
     renderPainel();
   }
 

@@ -236,3 +236,14 @@ footer a { color: var(--suave); }
 }
 
 .faixa-teste { width: 100%; margin: 0; border-radius: 0; text-align: center; font-family: "Oswald", sans-serif; letter-spacing: .05em; font-size: .85rem; padding: 6px 16px; }
+
+/* Entrega / retirada */
+.end-linha { color: var(--creme); font-size: 1.02rem; margin: 2px 0 4px; }
+.end-det { color: var(--suave); font-size: .88rem; margin-bottom: 4px; }
+.end-taxa { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 12px 0 4px; padding-top: 10px; border-top: 1px solid var(--linha); }
+.end-taxa span { font-family: "Oswald", "Arial Narrow", sans-serif; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ouro); }
+.end-taxa strong { font-family: "Bodoni Moda", Georgia, serif; font-size: 1.4rem; color: var(--ouro-claro); }
+.campos-entrega { margin-top: 16px; }
+#form-entrega .botoes { margin-top: 14px; }
+#btn-editar-entrega { float: right; text-transform: none; letter-spacing: 0; font-size: .85rem; }
+@media (max-width: 420px) { #form-entrega .linha2 { grid-template-columns: 1fr; gap: 0; } }

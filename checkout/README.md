@@ -27,6 +27,7 @@ Os arquivos usam caminhos absolutos (`/checkout/...` e `/assets/...`), porque a 
 |---|---|---|---|
 | 1 | `GET {N8N_BASE}/checkout-dados?p={token}` | — | ao abrir a página e no "Tentar de novo" |
 | 2 | `POST {N8N_BASE}/checkout-forma` | `{ token, forma_pagamento }` | ao trocar a forma de pagamento |
+| 2b | `POST {N8N_BASE}/checkout-entrega` | `{ token, modalidade, endereco, bairro, cep }` | ao salvar endereço/bairro/CEP ou trocar entrega ↔ retirada (taxa recalculada no banco) |
 | 3 | `POST {N8N_BASE}/checkout-pix` | `{ token }` | botão "Gerar Pix" |
 | 4 | `POST {N8N_BASE}/checkout-parcelas` | `{ token, bin }` | depois dos 6 primeiros dígitos do cartão (e quando eles mudam) |
 | 5 | `POST {N8N_BASE}/checkout-cartao` | `{ token, cartao_criptografado, titular_nome, titular_cpf, parcelas }` | botão "Pagar R$ X" |
@@ -38,6 +39,8 @@ Qualquer outro código mostra a `mensagem` que vier do servidor.
 Detalhes que o n8n precisa respeitar:
 - `checkout-dados` deve devolver `agora` e `expira_em` com fuso (ex.: `2026-11-22T16:00:00-03:00`). A página usa `agora` para corrigir o relógio do celular.
 - Mesmo com `status: "expirado"` ou `"pago"`, mande o `pedido` se puder: a página usa o `numero` na mensagem do WhatsApp e na confirmação.
+- `checkout-dados` traz `pedido.entrega` `{ modalidade, endereco, bairro, cep, janela, taxa, editavel, endereco_retirada }` e `pedido.bairros_atendidos` `[{ bairro, cidade, valor }]`. A edição só aparece com `editavel = true` (antes de gerar Pix ou cobrar o cartão).
+- `checkout-entrega` devolve o mesmo objeto `pedido`; erros: `endereco_invalido`, `cep_invalido`, `fora_da_area`, `bairro_nao_encontrado`, `pagamento_ja_iniciado`, `link_expirado`.
 - `checkout-forma` pode devolver o `pedido` direto ou dentro de `{ "pedido": ... }`; os dois funcionam.
 - `checkout-cartao` com `status: "em_analise"` faz a página consultar o `checkout-status` até virar `pago`.
 
